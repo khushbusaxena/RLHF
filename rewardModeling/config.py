@@ -3,7 +3,7 @@ import torch
 class Config:
     # Paths
     #DATA_PATH = "/content/drive/MyDrive/rlhgsumma/results.csv"
-    MODEL_CHECKPOINT = "google/flan-t5-base"
+    MODEL_CHECKPOINT = "google/flan-t5-small"
     OUTPUT_DIR = "/content/drive/MyDrive/RLHF/output"
 
     # Hyperparameters

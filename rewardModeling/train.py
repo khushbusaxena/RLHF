@@ -9,7 +9,7 @@ import torch
 from torch.optim import AdamW
 
 # Load tokenizer and model
-tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
+tokenizer = AutoTokenizer.from_pretrained(Config.MODEL_CHECKPOINT)
 model = AutoModelForSequenceClassification.from_pretrained(Config.MODEL_CHECKPOINT, num_labels=1)
 model.to(Config.DEVICE)
 
