@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from torch.utils.data import DataLoader
-from data.dataset import PreferenceDataset
-from utils.tokenizer import collate_fn
+from data.dataset import HHRLHFPreferenceDataset
+#from utils.tokenizer import collate_fn
 from models.reward_model import RewardModelTrainer
 from config import Config
 import torch
@@ -13,8 +13,8 @@ model = AutoModelForSequenceClassification.from_pretrained(Config.MODEL_CHECKPOI
 model.to(Config.DEVICE)
 
 # Load dataset
-dataset = PreferenceDataset(Config.DATA_PATH, tokenizer, Config.MAX_LENGTH)
-dataloader = DataLoader(dataset, batch_size=Config.BATCH_SIZE, shuffle=True, collate_fn=lambda x: collate_fn(x, tokenizer.pad_token_id))
+dataset = HHRLHFPreferenceDataset(split="train")
+dataloader = DataLoader(dataset, batch_size=Config.BATCH_SIZE, shuffle=True)
 
 # Initialize trainer
 optimizer = AdamW(model.parameters(), lr=Config.LEARNING_RATE)

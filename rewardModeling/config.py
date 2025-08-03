@@ -2,9 +2,9 @@ import torch
 
 class Config:
     # Paths
-    DATA_PATH = "/content/drive/MyDrive/rlhgsumma/results.csv"
-    MODEL_CHECKPOINT = "/content/drive/MyDrive/rlhgsumma/checkpoint-138"
-    OUTPUT_DIR = "/content/drive/MyDrive/rlhgsumma/output"
+    #DATA_PATH = "/content/drive/MyDrive/rlhgsumma/results.csv"
+    #MODEL_CHECKPOINT = "/content/drive/MyDrive/rlhgsumma/checkpoint-138"
+    OUTPUT_DIR = "/content/drive/MyDrive/RLHF/output"
 
     # Hyperparameters
     BATCH_SIZE = 8

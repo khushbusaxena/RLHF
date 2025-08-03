@@ -1,45 +1,41 @@
 # data/dataset.py
 
-import pandas as pd
+from datasets import load_dataset
 from torch.utils.data import Dataset
 from transformers import AutoTokenizer
 
-class PreferenceDataset(Dataset):
-    def __init__(self, data_path, tokenizer, max_length=512):
-        self.tokenizer = tokenizer
+class HHRLHFPreferenceDataset(Dataset):
+    def __init__(self, split="train", tokenizer_name="google/flan-t5-small", max_length=512):
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self.max_length = max_length
-        self.data = self._load_data(data_path)
-
-    def _load_data(self, data_path):
-        df = pd.read_csv(data_path)
-        df["label"] = df["preference"].apply(lambda x: 1 if x == "human" else 0)
-        df = df.drop(columns=["Unnamed: 0"], axis=1)
-        return df
+        self.dataset = load_dataset("Dahoas/full-hh-rlhf", split=split)
 
     def __len__(self):
-        return len(self.data)
+        return len(self.dataset)
 
     def __getitem__(self, idx):
-        row = self.data.iloc[idx]
-        prompt = row["prompt"]
-        human_answer = row["human_answer"]
-        machine_answer = row["machine_answer"]
-        label = row["label"]
+        example = self.dataset[idx]
 
-        # Tokenize the preferred and non-preferred outputs
+        prompt = example["prompt"]
+        chosen = example["chosen"]
+        rejected = example["rejected"]
+
+        # Tokenize the preferred (chosen) response
         preferred = self.tokenizer(
-            prompt + human_answer,
-            return_tensors="pt",
-            padding="max_length",
+            prompt + " " + chosen,
             truncation=True,
-            max_length=self.max_length
+            padding="max_length",
+            max_length=self.max_length,
+            return_tensors="pt"
         )
+
+        # Tokenize the non-preferred (rejected) response
         non_preferred = self.tokenizer(
-            prompt + machine_answer,
-            return_tensors="pt",
-            padding="max_length",
+            prompt + " " + rejected,
             truncation=True,
-            max_length=self.max_length
+            padding="max_length",
+            max_length=self.max_length,
+            return_tensors="pt"
         )
 
         return {
@@ -47,5 +43,5 @@ class PreferenceDataset(Dataset):
             "preferred_attention_mask": preferred["attention_mask"].squeeze(0),
             "non_preferred_input_ids": non_preferred["input_ids"].squeeze(0),
             "non_preferred_attention_mask": non_preferred["attention_mask"].squeeze(0),
-            "label": label
+            "label": 1  # Always 1, because chosen > rejected
         }
