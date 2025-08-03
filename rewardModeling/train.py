@@ -5,7 +5,8 @@ from data.dataset import HHRLHFPreferenceDataset
 from models.reward_model import RewardModelTrainer
 from config import Config
 import torch
-from transformers import AdamW
+#from transformers import AdamW
+from torch.optim import AdamW
 
 # Load tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
