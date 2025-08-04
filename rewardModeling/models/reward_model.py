@@ -1,6 +1,7 @@
 #import torch
 #from torch.utils.data import DataLoader
 #from transformers import AutoModelForSequenceClassification, AdamW
+import time
 
 class RewardModelTrainer:
     def __init__(self, model, device, optimizer, loss_fn):
@@ -12,7 +13,11 @@ class RewardModelTrainer:
     def train(self, dataloader, epochs=3):
         self.model.train()
         for epoch in range(epochs):
-            for batch in dataloader:
+
+            epoch_loss = 0.0
+            start_time = time.time()
+
+            for step, batch in enumerate(dataloader):
                 # Move tensors to the correct device
                 preferred_input_ids = batch["preferred_input_ids"].to(self.device)
                 preferred_attention_mask = batch["preferred_attention_mask"].to(self.device)
@@ -35,4 +40,12 @@ class RewardModelTrainer:
                 loss.backward()
                 self.optimizer.step()
 
-            print(f"Epoch {epoch + 1}/{epochs}, Loss: {loss.item()}")
+                epoch_loss += loss.item()
+
+                if (step + 1) % 10 == 0 or (step + 1) == len(dataloader):
+                    print(f"Epoch [{epoch+1}/{epochs}] Step [{step+1}/{len(dataloader)}] "
+                          f"Loss: {loss.item():.4f}")
+
+            epoch_time = time.time() - start_time
+            avg_loss = epoch_loss / len(dataloader)
+            print(f"Epoch [{epoch+1}] completed in {epoch_time:.2f}s - Avg Loss: {avg_loss:.4f}\n")
