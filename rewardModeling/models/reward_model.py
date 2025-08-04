@@ -26,6 +26,8 @@ class RewardModelTrainer:
 
                 # Compute loss
                 logits = preferred_rewards - non_preferred_rewards
+                logits = logits.squeeze(-1)
+                labels = labels.float()
                 loss = self.loss_fn(logits, labels)
 
                 # Backpropagation
